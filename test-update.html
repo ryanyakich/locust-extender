@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Update Mechanism</title>
+</head>
+<body>
+    <h1>Test Update Mechanism</h1>
+    <p>This page is for testing the extension update functionality.</p>
+    <p>Current extension version: 1.0.4</p>
+    <p>Remote version in version.json: 1.0.5</p>
+    <p>Expected behavior: Extension should detect that 1.0.5 > 1.0.4 and show update notification.</p>
+    
+    <h2>Test Steps:</h2>
+    <ol>
+        <li>Load the extension in Chrome (chrome://extensions)</li>
+        <li>Open the extension popup</li>
+        <li>You should see an update notification</li>
+        <li>Click "Check for updates" to manually trigger update check</li>
+        <li>Click "Settings" to configure automatic update checks</li>
+    </ol>
+    
+    <h2>Version JSON:</h2>
+    <pre id="versionJson"></pre>
+    
+    <script>
+        // Load and display the version.json file
+        fetch('version.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('versionJson').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('versionJson').textContent = 'Error loading version.json: ' + error.message;
+            });
+    </script>
+</body>
+</html>

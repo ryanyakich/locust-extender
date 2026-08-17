@@ -578,6 +578,129 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Could not clear badge:', error);
   }
 
+  // Check for update notification
+  const updateResult = await chrome.storage.local.get(['updateAvailable', 'latestVersion', 'downloadUrl', 'releaseNotes']);
+  const updateNotification = document.getElementById('updateNotification');
+  
+  if (updateResult.updateAvailable) {
+    console.log('Update available:', updateResult.latestVersion);
+    
+    // Show update notification
+    updateNotification.style.display = 'block';
+    document.getElementById('latestVersion').textContent = updateResult.latestVersion;
+    
+    if (updateResult.releaseNotes) {
+      document.getElementById('releaseNotes').textContent = updateResult.releaseNotes;
+    } else {
+      document.getElementById('releaseNotes').textContent = 'No release notes available.';
+    }
+    
+    // Set up download button
+    const downloadButton = document.getElementById('downloadUpdate');
+    downloadButton.addEventListener('click', () => {
+      if (updateResult.downloadUrl) {
+        chrome.tabs.create({ url: updateResult.downloadUrl });
+      } else {
+        alert('Download URL not available. Please contact your administrator.');
+      }
+    });
+    
+    // Set up dismiss button
+    const dismissButton = document.getElementById('dismissUpdate');
+    dismissButton.addEventListener('click', async () => {
+      // Dismiss the update notification
+      await chrome.runtime.sendMessage({ action: 'dismissUpdate' });
+      updateNotification.style.display = 'none';
+    });
+  } else {
+    updateNotification.style.display = 'none';
+  }
+
+  // Set up manual update check button
+  const checkUpdatesButton = document.getElementById('checkUpdatesButton');
+  checkUpdatesButton.addEventListener('click', async () => {
+    checkUpdatesButton.textContent = 'Checking...';
+    checkUpdatesButton.disabled = true;
+    
+    try {
+      await chrome.runtime.sendMessage({ action: 'checkForUpdates' });
+      
+      // Wait a moment for the background script to process and update storage
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if update is now available
+      const updatedResult = await chrome.storage.local.get(['updateAvailable', 'latestVersion', 'downloadUrl', 'releaseNotes']);
+      
+      if (updatedResult.updateAvailable) {
+        // Show update notification
+        updateNotification.style.display = 'block';
+        document.getElementById('latestVersion').textContent = updatedResult.latestVersion;
+        
+        if (updatedResult.releaseNotes) {
+          document.getElementById('releaseNotes').textContent = updatedResult.releaseNotes;
+        } else {
+          document.getElementById('releaseNotes').textContent = 'No release notes available.';
+        }
+        
+        // Update download button handler
+        const downloadButton = document.getElementById('downloadUpdate');
+        downloadButton.onclick = () => {
+          if (updatedResult.downloadUrl) {
+            chrome.tabs.create({ url: updatedResult.downloadUrl });
+          } else {
+            alert('Download URL not available. Please contact your administrator.');
+          }
+        };
+        
+        alert('An update is available!');
+      } else {
+        alert('You are already using the latest version.');
+      }
+    } catch (error) {
+      console.error('Update check failed:', error);
+      alert('Failed to check for updates. Please try again later.');
+    } finally {
+      checkUpdatesButton.textContent = 'Check for updates';
+      checkUpdatesButton.disabled = false;
+    }
+  });
+
+  // Settings modal functionality
+  const settingsButton = document.getElementById('settingsButton');
+  const settingsModal = document.getElementById('settingsModal');
+  const closeSettingsButton = document.getElementById('closeSettings');
+  const saveSettingsButton = document.getElementById('saveSettings');
+  const autoUpdateEnabledCheckbox = document.getElementById('autoUpdateEnabled');
+
+  // Load current settings
+  const settings = await chrome.storage.local.get(['autoUpdateEnabled']);
+  autoUpdateEnabledCheckbox.checked = settings.autoUpdateEnabled !== false; // Default to true
+
+  // Open settings modal
+  settingsButton.addEventListener('click', () => {
+    settingsModal.classList.add('open');
+  });
+
+  // Close settings modal
+  closeSettingsButton.addEventListener('click', () => {
+    settingsModal.classList.remove('open');
+  });
+
+  // Save settings
+  saveSettingsButton.addEventListener('click', async () => {
+    await chrome.storage.local.set({
+      autoUpdateEnabled: autoUpdateEnabledCheckbox.checked
+    });
+    settingsModal.classList.remove('open');
+  });
+
+  // Close modal when clicking outside
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+      settingsModal.classList.remove('open');
+    }
+  });
+
   // Listen for navigation complete messages from background
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'navigationComplete') {

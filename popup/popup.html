@@ -324,11 +324,137 @@
       font-weight: 600;
       z-index: 1;
     }
+    .update-notification {
+      background-color: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #856404;
+    }
+    .update-notification h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #856404;
+    }
+    .update-notification p {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: #856404;
+    }
+    .update-notification .version-info {
+      font-weight: 600;
+      color: #856404;
+    }
+    .update-notification .release-notes {
+      margin: 8px 0;
+      padding: 8px;
+      background-color: #fff;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #333;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .update-notification .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .update-notification button {
+      flex: 1;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    .update-notification button.update {
+      background-color: #007bff;
+      color: white;
+    }
+    .update-notification button.update:hover {
+      background-color: #0056b3;
+    }
+    .update-notification button.dismiss {
+      background-color: #6c757d;
+      color: white;
+    }
+    .update-notification button.dismiss:hover {
+      background-color: #545b62;
+    }
+    .settings-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .settings-modal.open {
+      display: flex;
+    }
+    .settings-content {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .settings-content h2 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .settings-item {
+      margin-bottom: 16px;
+    }
+    .settings-item label {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      color: #333;
+      cursor: pointer;
+    }
+    .settings-item input[type="checkbox"] {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    .settings-item p {
+      margin: 4px 0 0 0;
+      font-size: 11px;
+      color: #6c757d;
+    }
+    .settings-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+    .settings-buttons button {
+      padding: 6px 12px;
+      font-size: 12px;
+      flex: none;
+    }
   </style>
 </head>
 <body>
   <div class="popup-content">
     <h1>Locust Shift Availability Checker</h1>
+    
+    <div id="updateNotification" class="update-notification" style="display: none;">
+      <h3>🔄 Update Available</h3>
+      <p>A new version (<span id="latestVersion" class="version-info"></span>) is available!</p>
+      <div id="releaseNotes" class="release-notes"></div>
+      <div class="button-group">
+        <button id="downloadUpdate" class="update">Download Update</button>
+        <button id="dismissUpdate" class="dismiss">Dismiss</button>
+      </div>
+    </div>
     
     <div id="status" class="status disconnected">
       Not connected to locustspw.org
@@ -390,6 +516,11 @@
       <button id="emailButton" class="primary" style="display: none;">Copy Email Draft</button>
     </div>
     
+    <div style="text-align: center; margin-top: 8px;">
+      <button id="checkUpdatesButton" style="background: none; border: none; color: #6c757d; font-size: 11px; cursor: pointer; text-decoration: underline; padding: 0;">Check for updates</button>
+      <button id="settingsButton" style="background: none; border: none; color: #6c757d; font-size: 11px; cursor: pointer; text-decoration: underline; padding: 0; margin-left: 12px;">Settings</button>
+    </div>
+    
     <div id="emailFormatTabs" class="email-format-tabs" style="display: none;">
       <button class="tab-button active" data-format="list">List Format</button>
       <button class="tab-button" data-format="table">Table Format</button>
@@ -398,6 +529,24 @@
     <div id="emailPreview" class="email-preview" style="display: none; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 8px; margin-bottom: 12px; font-size: 13px; max-height: 200px; overflow-y: auto;"></div>
     
     <div id="dataDisplay" class="data-display"></div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal">
+      <div class="settings-content">
+        <h2>Settings</h2>
+        <div class="settings-item">
+          <label>
+            <input type="checkbox" id="autoUpdateEnabled" checked>
+            Enable automatic update checks
+          </label>
+          <p>Check for updates once per day when the extension starts</p>
+        </div>
+        <div class="settings-buttons">
+          <button id="closeSettings" class="secondary">Close</button>
+          <button id="saveSettings" class="primary">Save</button>
+        </div>
+      </div>
+    </div>
     
   </div>
   

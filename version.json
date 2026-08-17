@@ -1,0 +1,6 @@
+{
+  "version": "1.0.4",
+  "downloadUrl": "https://github.com/ryanyakich/locust-extender/releases/latest",
+  "releaseNotes": "Added automatic update checking functionality. The extension will now notify you when updates are available and provide one-click download access.",
+  "releaseDate": "2026-08-17"
+}
