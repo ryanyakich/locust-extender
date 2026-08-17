@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Locust Shift Availability Checker",
+  "version": "1.0.3",
+  "description": "Check shift availability and generate volunteer need emails for locustspw.org",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://locustspw.org/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background/background.js"
+  }
+}
