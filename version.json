@@ -1,6 +1,6 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "downloadUrl": "https://github.com/ryanyakich/locust-extender/releases/latest",
-  "releaseNotes": "Added automatic update checking functionality. The extension will now notify you when updates are available and provide one-click download access.",
-  "releaseDate": "2026-08-17"
+  "releaseNotes": "Fixed date formatting to show full day and month names instead of just numbers.",
+  "releaseDate": "2026-10-17"
 }

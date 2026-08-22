@@ -18,17 +18,26 @@ function formatDate(d) {
     date = d;
   }
 
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  const yyyy = date.getFullYear();
-  return `${mm}/${dd}/${yyyy}`;
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }
 
 function formatDateString(dateStr) {
   // Handle YYYY-MM-DD string format directly
   const parts = dateStr.split('-');
   if (parts.length === 3) {
-    return `${parts[1]}/${parts[2]}/${parts[0]}`;
+    const [year, month, day] = parts.map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
   return dateStr;
 }
